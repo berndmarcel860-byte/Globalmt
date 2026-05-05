@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Global Money Transfer Ltd – Fast, Secure & Reliable Transfers</title>
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+    crossorigin="anonymous"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    rel="stylesheet"
+  />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      --primary: #0d6efd;
+      --primary-dark: #0a58ca;
+      --secondary: #198754;
+      --accent: #ffc107;
+      --dark: #0b1120;
+      --dark-soft: #111827;
+      --text-muted-custom: #6c757d;
+      --card-bg: #ffffff;
+      --section-bg: #f8f9fa;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: #212529;
+      overflow-x: hidden;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      background: rgba(11, 17, 32, 0.97) !important;
+      backdrop-filter: blur(10px);
+      padding: 0.85rem 0;
+      transition: box-shadow .3s;
+    }
+    .navbar.scrolled { box-shadow: 0 4px 24px rgba(0,0,0,.35); }
+    .navbar-brand {
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: #ffffff !important;
+      letter-spacing: -.5px;
+    }
+    .navbar-brand span { color: var(--accent); }
+    .nav-link {
+      color: rgba(255,255,255,.8) !important;
+      font-weight: 500;
+      font-size: .9rem;
+      padding: .5rem .9rem !important;
+      border-radius: 6px;
+      transition: background .2s, color .2s;
+    }
+    .nav-link:hover, .nav-link.active { color: #fff !important; background: rgba(255,255,255,.1); }
+    .navbar .btn-track {
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+      font-size: .85rem;
+      border-radius: 6px;
+      padding: .45rem 1.1rem;
+      border: none;
+      transition: background .2s, transform .15s;
+    }
+    .navbar .btn-track:hover { background: #e0a800; transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #0b1120 0%, #0d2a6b 50%, #0b1120 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='1' fill='rgba(255,255,255,0.07)'/%3E%3C/svg%3E") repeat;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 50px;
+      padding: .4rem 1rem;
+      font-size: .8rem;
+      color: rgba(255,255,255,.75);
+      margin-bottom: 1.5rem;
+    }
+    .hero-badge .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .4; }
+    }
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.15;
+    }
+    .hero h1 .highlight {
+      background: linear-gradient(90deg, #60a5fa, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p.lead {
+      color: rgba(255,255,255,.72);
+      font-size: 1.1rem;
+      max-width: 540px;
+      line-height: 1.75;
+    }
+    .hero .cta-group { gap: .85rem; }
+    .btn-primary-hero {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      padding: .85rem 2rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all .2s;
+      box-shadow: 0 8px 24px rgba(37,99,235,.4);
+    }
+    .btn-primary-hero:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(37,99,235,.5); color: #fff; }
+    .btn-outline-hero {
+      background: transparent;
+      border: 2px solid rgba(255,255,255,.3);
+      color: #fff;
+      font-weight: 600;
+      padding: .85rem 2rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all .2s;
+    }
+    .btn-outline-hero:hover { border-color: #fff; background: rgba(255,255,255,.08); color: #fff; }
+    .hero-stats { margin-top: 3rem; }
+    .stat-item { text-align: center; }
+    .stat-item .number {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .stat-item .label {
+      font-size: .8rem;
+      color: rgba(255,255,255,.55);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .stat-divider {
+      width: 1px;
+      background: rgba(255,255,255,.15);
+      height: 48px;
+      align-self: center;
+    }
+    .hero-card {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(12px);
+    }
+    .hero-card h4 { color: #fff; font-weight: 700; font-size: 1.1rem; }
+    .hero-card label { color: rgba(255,255,255,.65); font-size: .85rem; font-weight: 500; }
+    .hero-card .form-control, .hero-card .form-select {
+      background: rgba(255,255,255,.09);
+      border: 1px solid rgba(255,255,255,.18);
+      color: #fff;
+      border-radius: 8px;
+    }
+    .hero-card .form-control::placeholder { color: rgba(255,255,255,.35); }
+    .hero-card .form-control:focus, .hero-card .form-select:focus {
+      background: rgba(255,255,255,.13);
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 3px rgba(96,165,250,.2);
+      color: #fff;
+    }
+    .hero-card .form-select option { background: #0b1120; color: #fff; }
+    .rate-display {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      padding: .85rem 1rem;
+      text-align: center;
+      font-size: .85rem;
+      color: rgba(255,255,255,.7);
+    }
+    .rate-display .rate-number { font-size: 1.2rem; font-weight: 700; color: #22c55e; }
+
+    /* ── TRACK STATUS ── */
+    #track {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      padding: 5rem 0;
+    }
+    .track-card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.08);
+      padding: 3rem;
+    }
+    .track-icon-wrap {
+      width: 70px; height: 70px;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+    .track-card h2 { font-weight: 800; font-size: 1.9rem; color: #0b1120; }
+    .track-card p { color: #6c757d; }
+    .track-input-group .form-control {
+      border-radius: 10px 0 0 10px;
+      border: 2px solid #e2e8f0;
+      padding: .85rem 1.2rem;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    .track-input-group .form-control:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+    }
+    .track-input-group .btn {
+      border-radius: 0 10px 10px 0;
+      padding: .85rem 1.8rem;
+      font-weight: 700;
+    }
+    .status-result {
+      border-radius: 14px;
+      padding: 1.5rem 1.75rem;
+      display: none;
+    }
+    .status-result.show { display: block; }
+    .status-timeline { list-style: none; padding: 0; margin: 1.5rem 0 0; }
+    .status-timeline li {
+      display: flex; align-items: flex-start; gap: 1rem;
+      padding-bottom: 1.25rem; position: relative;
+    }
+    .status-timeline li:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 14px; top: 30px;
+      width: 2px; height: calc(100% - 14px);
+      background: #e2e8f0;
+    }
+    .status-dot {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 700; color: #fff;
+      z-index: 1;
+    }
+    .status-dot.done   { background: #22c55e; }
+    .status-dot.active { background: #2563eb; }
+    .status-dot.pending{ background: #e2e8f0; color: #94a3b8; }
+    .status-info .title { font-weight: 700; font-size: .9rem; color: #0b1120; }
+    .status-info .time  { font-size: .8rem; color: #94a3b8; }
+
+    /* ── SECTION SHARED ── */
+    section { padding: 5.5rem 0; }
+    .section-label {
+      display: inline-block;
+      background: rgba(37,99,235,.1);
+      color: #2563eb;
+      font-weight: 700;
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: .35rem .9rem;
+      border-radius: 50px;
+      margin-bottom: .9rem;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+      font-weight: 800;
+      color: #0b1120;
+      line-height: 1.25;
+    }
+    .section-sub { color: #6c757d; font-size: 1rem; max-width: 540px; }
+
+    /* ── SERVICES ── */
+    #services { background: #fff; }
+    .service-card {
+      border: 1.5px solid #e8ecf0;
+      border-radius: 18px;
+      padding: 2rem;
+      height: 100%;
+      transition: all .25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .service-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      opacity: 0;
+      transition: opacity .25s;
+      border-radius: 17px;
+    }
+    .service-card:hover { transform: translateY(-6px); border-color: #2563eb; box-shadow: 0 24px 48px rgba(37,99,235,.15); }
+    .service-card:hover::before { opacity: .04; }
+    .service-icon {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin-bottom: 1.2rem;
+      transition: transform .25s;
+    }
+    .service-card:hover .service-icon { transform: scale(1.1) rotate(-3deg); }
+    .service-card h5 { font-weight: 700; font-size: 1.05rem; color: #0b1120; margin-bottom: .5rem; }
+    .service-card p { font-size: .88rem; color: #6c757d; line-height: 1.65; margin: 0; }
+
+    /* ── WHY US ── */
+    #why-us { background: var(--section-bg); }
+    .why-item {
+      display: flex; gap: 1.2rem; align-items: flex-start;
+      margin-bottom: 2rem;
+    }
+    .why-icon {
+      width: 48px; height: 48px; flex-shrink: 0;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+    }
+    .why-item h6 { font-weight: 700; font-size: .98rem; color: #0b1120; margin-bottom: .25rem; }
+    .why-item p  { font-size: .86rem; color: #6c757d; margin: 0; line-height: 1.65; }
+    .why-img-wrap {
+      border-radius: 20px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0b1120 0%, #1e3a8a 100%);
+      min-height: 420px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      box-shadow: 0 30px 60px rgba(0,0,0,.18);
+    }
+    .globe-graphic {
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 40%, #1d4ed8 0%, #0b1120 70%);
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .globe-graphic::before, .globe-graphic::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    .globe-graphic::before { width: 100%; height: 100%; }
+    .globe-graphic::after  { width: 140%; height: 140%; }
+    .globe-icon { font-size: 6rem; color: rgba(255,255,255,.9); }
+    .floating-badge {
+      position: absolute;
+      background: #fff;
+      border-radius: 12px;
+      padding: .7rem 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,.12);
+      font-size: .82rem;
+      font-weight: 600;
+      color: #0b1120;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .floating-badge.top-left  { top: 10%; left: -5%; }
+    .floating-badge.mid-right { top: 45%; right: -5%; }
+    .floating-badge.bottom-left { bottom: 10%; left: -5%; }
+
+    /* ── HOW IT WORKS ── */
+    #how-it-works { background: #fff; }
+    .step-card {
+      text-align: center;
+      padding: 2rem 1.5rem;
+    }
+    .step-number {
+      width: 64px; height: 64px;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; font-weight: 800; color: #fff;
+      margin: 0 auto 1.4rem;
+      box-shadow: 0 8px 24px rgba(37,99,235,.35);
+    }
+    .step-card h5 { font-weight: 700; font-size: 1.05rem; color: #0b1120; }
+    .step-card p  { font-size: .88rem; color: #6c757d; line-height: 1.65; }
+    .step-connector {
+      display: flex; align-items: center; justify-content: center;
+      padding-top: 1.8rem;
+    }
+    .step-connector i { font-size: 1.4rem; color: #cbd5e1; }
+
+    /* ── RATES ── */
+    #rates { background: linear-gradient(135deg, #0b1120 0%, #0d2a6b 100%); }
+    #rates .section-title { color: #fff; }
+    #rates .section-sub   { color: rgba(255,255,255,.6); }
+    #rates .section-label { background: rgba(255,255,255,.1); color: #93c5fd; }
+    .rate-card {
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: all .25s;
+    }
+    .rate-card:hover { background: rgba(255,255,255,.11); transform: translateY(-3px); }
+    .rate-flag { font-size: 2.2rem; line-height: 1; }
+    .rate-currency { font-size: .85rem; color: rgba(255,255,255,.55); margin-top: .25rem; }
+    .rate-value { font-size: 1.5rem; font-weight: 800; color: #fff; }
+    .rate-change.up   { color: #22c55e; font-size: .8rem; font-weight: 600; }
+    .rate-change.down { color: #ef4444; font-size: .8rem; font-weight: 600; }
+    .rate-ticker {
+      background: rgba(255,255,255,.05);
+      border-radius: 10px;
+      padding: 1rem 1.5rem;
+      margin-top: 2rem;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    /* ── TESTIMONIALS ── */
+    #testimonials { background: var(--section-bg); }
+    .testimonial-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 2rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,.07);
+      height: 100%;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .testimonial-card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,0,0,.1); }
+    .stars { color: var(--accent); font-size: 1rem; margin-bottom: 1rem; }
+    .testimonial-text { font-size: .92rem; color: #475569; line-height: 1.75; font-style: italic; }
+    .testimonial-author { display: flex; align-items: center; gap: .85rem; margin-top: 1.5rem; }
+    .author-avatar {
+      width: 46px; height: 46px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1rem; color: #fff; flex-shrink: 0;
+    }
+    .author-name { font-weight: 700; font-size: .9rem; color: #0b1120; }
+    .author-loc  { font-size: .8rem; color: #94a3b8; }
+
+    /* ── CTA BANNER ── */
+    #cta {
+      background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%);
+      padding: 5rem 0;
+    }
+    #cta h2 { font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 800; color: #fff; }
+    #cta p  { color: rgba(255,255,255,.8); font-size: 1.05rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #0b1120;
+      padding: 4rem 0 2rem;
+      color: rgba(255,255,255,.6);
+      font-size: .88rem;
+    }
+    .footer-brand { font-weight: 800; font-size: 1.3rem; color: #fff; margin-bottom: .5rem; }
+    .footer-brand span { color: var(--accent); }
+    .footer-desc { font-size: .85rem; line-height: 1.7; color: rgba(255,255,255,.5); max-width: 260px; }
+    .footer-heading { font-weight: 700; font-size: .9rem; color: #fff; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 1.2rem; }
+    .footer-link {
+      display: block; color: rgba(255,255,255,.55);
+      text-decoration: none; margin-bottom: .6rem;
+      font-size: .87rem; transition: color .2s;
+    }
+    .footer-link:hover { color: #fff; }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,.08);
+      margin-top: 3rem; padding-top: 1.75rem;
+      display: flex; flex-wrap: wrap; gap: 1rem;
+      justify-content: space-between; align-items: center;
+    }
+    .social-links a {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: rgba(255,255,255,.08);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,.6); text-decoration: none;
+      font-size: .9rem; transition: background .2s, color .2s;
+    }
+    .social-links a:hover { background: #2563eb; color: #fff; }
+    .trust-badges { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2.5rem; }
+    .trust-badge {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      padding: .4rem .85rem;
+      font-size: .78rem;
+      color: rgba(255,255,255,.6);
+      display: flex; align-items: center; gap: .4rem;
+    }
+
+    /* ── MISC ── */
+    .bg-blue-10 { background: rgba(37,99,235,.1); }
+    .bg-green-10{ background: rgba(34,197,94,.1); }
+    .bg-amber-10{ background: rgba(251,191,36,.1); }
+    .bg-rose-10 { background: rgba(239,68,68,.1); }
+    .bg-purple-10{ background: rgba(139,92,246,.1); }
+    .bg-teal-10 { background: rgba(20,184,166,.1); }
+    .text-blue   { color: #2563eb; }
+    .text-green  { color: #16a34a; }
+    .text-amber  { color: #d97706; }
+    .text-rose   { color: #dc2626; }
+    .text-purple { color: #7c3aed; }
+    .text-teal   { color: #0d9488; }
+
+    @media (max-width: 767px) {
+      .stat-divider { display: none; }
+      .floating-badge { display: none; }
+      .step-connector { display: none; }
+      .hero { padding: 6rem 0 4rem; min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     NAVBAR
+============================================================ -->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+  <div class="container">
+    <a class="navbar-brand" href="#">GMT <span>Ltd</span></a>
+
+    <button
+      class="navbar-toggler border-0"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navMenu"
+      aria-controls="navMenu"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <i class="bi bi-list text-white fs-4"></i>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-1 mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+        <li class="nav-item"><a class="nav-link" href="#why-us">Why Us</a></li>
+        <li class="nav-item"><a class="nav-link" href="#how-it-works">How It Works</a></li>
+        <li class="nav-item"><a class="nav-link" href="#rates">Rates</a></li>
+        <li class="nav-item"><a class="nav-link" href="#testimonials">Reviews</a></li>
+      </ul>
+      <div class="d-flex ms-lg-3 mt-2 mt-lg-0">
+        <a href="#track" class="btn btn-track">Track Transfer</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO
+============================================================ -->
+<section class="hero" id="home">
+  <div class="container position-relative">
+    <div class="row align-items-center gy-5">
+
+      <!-- Left: Copy -->
+      <div class="col-lg-6">
+        <div class="hero-badge">
+          <span class="dot"></span>
+          Trusted by 2 million+ customers worldwide
+        </div>
+        <h1>Send Money<br /><span class="highlight">Globally,</span><br />Instantly.</h1>
+        <p class="lead mt-3">
+          Global Money Transfer Ltd delivers fast, secure, and affordable international transfers
+          to 150+ countries. Get the best exchange rates with zero hidden fees.
+        </p>
+        <div class="d-flex flex-wrap cta-group mt-4">
+          <a href="#" class="btn btn-primary-hero">
+            <i class="bi bi-send-fill me-2"></i>Send Money Now
+          </a>
+          <a href="#how-it-works" class="btn btn-outline-hero">
+            <i class="bi bi-play-circle me-2"></i>How It Works
+          </a>
+        </div>
+
+        <!-- Stats -->
+        <div class="hero-stats d-flex flex-wrap align-items-center gap-3 gap-md-4">
+          <div class="stat-item">
+            <div class="number">150+</div>
+            <div class="label">Countries</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <div class="number">$2B+</div>
+            <div class="label">Transferred</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <div class="number">2M+</div>
+            <div class="label">Customers</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <div class="number">99.9%</div>
+            <div class="label">Uptime</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Calculator card -->
+      <div class="col-lg-5 offset-lg-1">
+        <div class="hero-card">
+          <h4 class="mb-4"><i class="bi bi-calculator me-2 text-warning"></i>Quick Rate Calculator</h4>
+
+          <div class="mb-3">
+            <label class="form-label">You Send</label>
+            <div class="input-group">
+              <input type="number" class="form-control" id="sendAmount" placeholder="1,000" value="1000" oninput="calcRate()" />
+              <select class="form-select" id="fromCurrency" style="max-width:100px;" onchange="calcRate()">
+                <option value="1">USD</option>
+                <option value="0.93">EUR</option>
+                <option value="0.80">GBP</option>
+                <option value="1.36">CAD</option>
+                <option value="1.54">AUD</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Recipient Gets</label>
+            <div class="input-group">
+              <input type="text" class="form-control" id="receiveAmount" placeholder="—" readonly />
+              <select class="form-select" id="toCurrency" style="max-width:100px;" onchange="calcRate()">
+                <option value="83.2">INR</option>
+                <option value="7.8">HKD</option>
+                <option value="1480">KES</option>
+                <option value="17.1">MXN</option>
+                <option value="3.67">AED</option>
+                <option value="130">JPY</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="rate-display mb-3">
+            <span id="rateLabel">1 USD = </span>
+            <span class="rate-number" id="rateValue">83.20 INR</span>
+            &nbsp;·&nbsp; <i class="bi bi-shield-check text-success"></i> No hidden fees
+          </div>
+
+          <a href="#" class="btn btn-primary w-100 fw-bold py-2">
+            <i class="bi bi-send me-2"></i>Get Started — It's Free
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TRACK TRANSFER STATUS
+============================================================ -->
+<section id="track">
+  <div class="container">
+    <div class="track-card">
+      <div class="row align-items-center gy-4">
+        <div class="col-lg-5">
+          <div class="track-icon-wrap">
+            <i class="bi bi-geo-alt-fill"></i>
+          </div>
+          <h2>Track Your Transfer</h2>
+          <p class="mb-0">
+            Enter your transfer reference number to get real-time status updates on your
+            international money transfer. Receive instant notifications at every stage.
+          </p>
+          <div class="d-flex flex-wrap gap-3 mt-4">
+            <div class="d-flex align-items-center gap-2 text-muted" style="font-size:.85rem;">
+              <i class="bi bi-clock-history text-primary"></i> Real-time updates
+            </div>
+            <div class="d-flex align-items-center gap-2 text-muted" style="font-size:.85rem;">
+              <i class="bi bi-bell text-primary"></i> Email & SMS alerts
+            </div>
+            <div class="d-flex align-items-center gap-2 text-muted" style="font-size:.85rem;">
+              <i class="bi bi-shield-lock text-primary"></i> Secure tracking
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-7">
+          <label class="form-label fw-semibold mb-2" for="trackingRef">Transfer Reference Number</label>
+          <div class="input-group track-input-group">
+            <input
+              type="text"
+              class="form-control"
+              id="trackingRef"
+              placeholder="e.g. GMT-2024-001234"
+              maxlength="20"
+            />
+            <button class="btn btn-primary" type="button" onclick="trackTransfer()">
+              <i class="bi bi-search me-1"></i> Track
+            </button>
+          </div>
+          <p class="text-muted mt-2" style="font-size:.82rem;">
+            Your reference number was emailed to you when your transfer was initiated.
+          </p>
+
+          <!-- Status Result -->
+          <div class="status-result alert alert-primary" id="statusResult" role="alert">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+              <div>
+                <h6 class="fw-bold mb-1" id="statusTitle">Transfer In Progress</h6>
+                <div class="text-muted" style="font-size:.85rem;" id="statusMeta"></div>
+              </div>
+              <span class="badge rounded-pill bg-warning text-dark fw-semibold" id="statusBadge">Processing</span>
+            </div>
+            <ul class="status-timeline" id="statusTimeline"></ul>
+          </div>
+
+          <!-- Error Result -->
+          <div class="status-result alert alert-danger" id="statusError" role="alert">
+            <i class="bi bi-exclamation-circle me-2"></i>
+            <strong>Reference not found.</strong> Please check your reference number and try again,
+            or <a href="mailto:support@globalmt.com" class="alert-link">contact support</a>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SERVICES
+============================================================ -->
+<section id="services">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-label">Our Services</span>
+      <h2 class="section-title">Everything You Need to<br />Move Money Globally</h2>
+      <p class="section-sub mx-auto mt-2">
+        From personal remittances to enterprise payroll, we have a solution tailored to your needs.
+      </p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-sm-6 col-lg-4">
+        <div class="service-card">
+          <div class="service-icon bg-blue-10">
+            <i class="bi bi-globe2 text-blue fs-5"></i>
+          </div>
+          <h5>International Transfers</h5>
+          <p>Send money to 150+ countries in 50+ currencies. Competitive rates with fast delivery, often within minutes.</p>
+          <a href="#" class="text-primary fw-semibold small mt-2 d-inline-flex align-items-center gap-1">
+            Learn more <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-4">
+        <div class="service-card">
+          <div class="service-icon bg-green-10">
+            <i class="bi bi-building-fill-check text-green fs-5"></i>
+          </div>
+          <h5>Business Payments</h5>
+          <p>Streamline supplier payments, payroll, and bulk disbursements with dedicated business accounts and API integration.</p>
+          <a href="#" class="text-primary fw-semibold small mt-2 d-inline-flex align-items-center gap-1">
+            Learn more <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-4">
+        <div class="service-card">
+          <div class="service-icon bg-amber-10">
+            <i class="bi bi-currency-exchange text-amber fs-5"></i>
+          </div>
+          <h5>Currency Exchange</h5>
+          <p>Lock in live exchange rates with our forward contracts. Protect your transfers from market volatility.</p>
+          <a href="#" class="text-primary fw-semibold small mt-2 d-inline-flex align-items-center gap-1">
+            Learn more <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-4">
+        <div class="service-card">
+          <div class="service-icon bg-rose-10">
+            <i class="bi bi-phone-fill text-rose fs-5"></i>
+          </div>
+          <h5>Mobile Wallet Transfers</h5>
+          <p>Send directly to M-Pesa, GCash, bKash, and 30+ mobile wallets. Instant delivery, no bank account needed.</p>
+          <a href="#" class="text-primary fw-semibold small mt-2 d-inline-flex align-items-center gap-1">
+            Learn more <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-4">
+        <div class="service-card">
+          <div class="service-icon bg-purple-10">
+            <i class="bi bi-cash-coin text-purple fs-5"></i>
+          </div>
+          <h5>Cash Pickup</h5>
+          <p>Recipients can collect cash at 500,000+ agent locations worldwide — even without a bank account.</p>
+          <a href="#" class="text-primary fw-semibold small mt-2 d-inline-flex align-items-center gap-1">
+            Learn more <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-4">
+        <div class="service-card">
+          <div class="service-icon bg-teal-10">
+            <i class="bi bi-repeat text-teal fs-5"></i>
+          </div>
+          <h5>Recurring Transfers</h5>
+          <p>Set up automated recurring payments for rent, family support, or subscriptions. Never miss a transfer.</p>
+          <a href="#" class="text-primary fw-semibold small mt-2 d-inline-flex align-items-center gap-1">
+            Learn more <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     WHY US
+============================================================ -->
+<section id="why-us">
+  <div class="container">
+    <div class="row align-items-center gy-5">
+
+      <div class="col-lg-6">
+        <span class="section-label">Why Choose Us</span>
+        <h2 class="section-title mb-4">The Smarter Way to<br />Send Money Abroad</h2>
+
+        <div class="why-item">
+          <div class="why-icon bg-blue-10">
+            <i class="bi bi-lightning-fill text-blue"></i>
+          </div>
+          <div>
+            <h6>Lightning-Fast Transfers</h6>
+            <p>Most transfers arrive within minutes. Bank-to-bank transfers typically complete within 1–2 business days.</p>
+          </div>
+        </div>
+
+        <div class="why-item">
+          <div class="why-icon bg-green-10">
+            <i class="bi bi-shield-fill-check text-green"></i>
+          </div>
+          <div>
+            <h6>Bank-Grade Security</h6>
+            <p>256-bit SSL encryption, two-factor authentication, and compliance with global AML/KYC regulations keep your money safe.</p>
+          </div>
+        </div>
+
+        <div class="why-item">
+          <div class="why-icon bg-amber-10">
+            <i class="bi bi-tag-fill text-amber"></i>
+          </div>
+          <div>
+            <h6>Transparent, Low Fees</h6>
+            <p>Our fees are always shown upfront — no surprises. We offer some of the most competitive rates in the industry.</p>
+          </div>
+        </div>
+
+        <div class="why-item">
+          <div class="why-icon bg-purple-10">
+            <i class="bi bi-headset text-purple"></i>
+          </div>
+          <div>
+            <h6>24/7 Customer Support</h6>
+            <p>Our multilingual support team is available around the clock via live chat, email, and phone to assist you.</p>
+          </div>
+        </div>
+
+        <div class="why-item">
+          <div class="why-icon bg-teal-10">
+            <i class="bi bi-patch-check-fill text-teal"></i>
+          </div>
+          <div>
+            <h6>Fully Licensed & Regulated</h6>
+            <p>GMT Ltd is authorised and regulated by the FCA (UK), FinCEN (US), and AUSTRAC (Australia). Your funds are always protected.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-5 offset-lg-1">
+        <div class="why-img-wrap">
+          <div class="globe-graphic">
+            <i class="bi bi-globe-americas globe-icon"></i>
+          </div>
+          <div class="floating-badge top-left">
+            <i class="bi bi-check-circle-fill text-success"></i> FCA Regulated
+          </div>
+          <div class="floating-badge mid-right">
+            <i class="bi bi-lightning-charge-fill text-warning"></i> Instant Transfers
+          </div>
+          <div class="floating-badge bottom-left">
+            <i class="bi bi-people-fill text-primary"></i> 2M+ Customers
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     HOW IT WORKS
+============================================================ -->
+<section id="how-it-works">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-label">How It Works</span>
+      <h2 class="section-title">Send Money in 4 Simple Steps</h2>
+      <p class="section-sub mx-auto mt-2">Getting started is easy. Your first transfer takes just a few minutes.</p>
+    </div>
+
+    <div class="row align-items-start g-0">
+      <div class="col-6 col-lg-2">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h5>Create Account</h5>
+          <p>Sign up for free in under 2 minutes with just your email address.</p>
+        </div>
+      </div>
+      <div class="col-6 col-lg-1 d-none d-lg-flex step-connector">
+        <i class="bi bi-chevron-right"></i>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h5>Verify Identity</h5>
+          <p>Quick ID verification to keep your transfers secure and compliant.</p>
+        </div>
+      </div>
+      <div class="col-6 col-lg-1 d-none d-lg-flex step-connector">
+        <i class="bi bi-chevron-right"></i>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h5>Enter Details</h5>
+          <p>Enter the recipient's details, the amount, and choose your delivery method.</p>
+        </div>
+      </div>
+      <div class="col-6 col-lg-1 d-none d-lg-flex step-connector">
+        <i class="bi bi-chevron-right"></i>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <h5>Track & Confirm</h5>
+          <p>Pay securely and track your transfer in real time until it's delivered.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="#" class="btn btn-primary btn-lg fw-bold px-5">
+        <i class="bi bi-rocket-takeoff me-2"></i>Start Sending Today
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     LIVE EXCHANGE RATES
+============================================================ -->
+<section id="rates">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-label">Exchange Rates</span>
+      <h2 class="section-title">Live Exchange Rates</h2>
+      <p class="section-sub mx-auto mt-2" style="color:rgba(255,255,255,.6);">
+        We update rates every 60 seconds so you always get the best deal.
+      </p>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="rate-card text-center">
+          <div class="rate-flag">🇮🇳</div>
+          <div class="rate-currency">USD → INR</div>
+          <div class="rate-value">83.24</div>
+          <div class="rate-change up"><i class="bi bi-arrow-up-short"></i>+0.12%</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="rate-card text-center">
+          <div class="rate-flag">🇬🇧</div>
+          <div class="rate-currency">USD → GBP</div>
+          <div class="rate-value">0.798</div>
+          <div class="rate-change down"><i class="bi bi-arrow-down-short"></i>-0.05%</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="rate-card text-center">
+          <div class="rate-flag">🇪🇺</div>
+          <div class="rate-currency">USD → EUR</div>
+          <div class="rate-value">0.927</div>
+          <div class="rate-change up"><i class="bi bi-arrow-up-short"></i>+0.08%</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="rate-card text-center">
+          <div class="rate-flag">🇵🇭</div>
+          <div class="rate-currency">USD → PHP</div>
+          <div class="rate-value">56.80</div>
+          <div class="rate-change up"><i class="bi bi-arrow-up-short"></i>+0.22%</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="rate-card text-center">
+          <div class="rate-flag">🇰🇪</div>
+          <div class="rate-currency">USD → KES</div>
+          <div class="rate-value">129.5</div>
+          <div class="rate-change down"><i class="bi bi-arrow-down-short"></i>-0.18%</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="rate-card text-center">
+          <div class="rate-flag">🇦🇪</div>
+          <div class="rate-currency">USD → AED</div>
+          <div class="rate-value">3.673</div>
+          <div class="rate-change up"><i class="bi bi-arrow-up-short"></i>+0.01%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rate-ticker d-flex flex-wrap align-items-center justify-content-between gap-2">
+      <span class="text-white-50 small"><i class="bi bi-clock me-1"></i>Last updated: Just now</span>
+      <span class="text-white-50 small">Rates shown are indicative. Final rate confirmed at time of transfer.</span>
+      <a href="#" class="btn btn-sm btn-outline-light fw-semibold">
+        <i class="bi bi-arrow-repeat me-1"></i>View All Rates
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TESTIMONIALS
+============================================================ -->
+<section id="testimonials">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-label">Customer Reviews</span>
+      <h2 class="section-title">Trusted by Millions<br />Around the World</h2>
+      <p class="section-sub mx-auto mt-2">Real stories from our customers who send money home every day.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4">
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">
+            "I've been using GMT for three years to send money to my family in India.
+            The rates are consistently better than my bank, and transfers arrive the same day. Absolutely love it!"
+          </p>
+          <div class="testimonial-author">
+            <div class="author-avatar" style="background:linear-gradient(135deg,#2563eb,#3b82f6);">PS</div>
+            <div>
+              <div class="author-name">Priya S.</div>
+              <div class="author-loc"><i class="bi bi-geo-alt-fill me-1"></i>London, UK → Mumbai, India</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">
+            "As a small business owner, I use GMT to pay overseas suppliers. The bulk payment feature
+            saves me hours every month, and their support team is always ready to help."
+          </p>
+          <div class="testimonial-author">
+            <div class="author-avatar" style="background:linear-gradient(135deg,#16a34a,#22c55e);">JM</div>
+            <div>
+              <div class="author-name">James M.</div>
+              <div class="author-loc"><i class="bi bi-geo-alt-fill me-1"></i>Toronto, Canada</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">
+            "The tracking feature is brilliant — I always know exactly where my transfer is. My mother
+            in the Philippines receives the money in minutes. GMT is simply the best!"
+          </p>
+          <div class="testimonial-author">
+            <div class="author-avatar" style="background:linear-gradient(135deg,#d97706,#fbbf24);">RC</div>
+            <div>
+              <div class="author-name">Rosa C.</div>
+              <div class="author-loc"><i class="bi bi-geo-alt-fill me-1"></i>Dubai, UAE → Manila, Philippines</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">
+            "Switched from Western Union and couldn't be happier. The fees are much lower,
+            the app is intuitive, and the cash pickup service at local agents is incredibly convenient."
+          </p>
+          <div class="testimonial-author">
+            <div class="author-avatar" style="background:linear-gradient(135deg,#7c3aed,#8b5cf6);">AK</div>
+            <div>
+              <div class="author-name">Ahmed K.</div>
+              <div class="author-loc"><i class="bi bi-geo-alt-fill me-1"></i>Riyadh, KSA → Nairobi, Kenya</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">
+            "GMT's recurring transfer feature means I never forget to send money home. It just
+            happens automatically. The peace of mind is priceless."
+          </p>
+          <div class="testimonial-author">
+            <div class="author-avatar" style="background:linear-gradient(135deg,#0d9488,#14b8a6);">LN</div>
+            <div>
+              <div class="author-name">Liu N.</div>
+              <div class="author-loc"><i class="bi bi-geo-alt-fill me-1"></i>Sydney, Australia → Beijing, China</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">
+            "The mobile wallet transfer to M-Pesa is a game changer for sending money to rural areas.
+            Fast, reliable, and my family can access funds immediately."
+          </p>
+          <div class="testimonial-author">
+            <div class="author-avatar" style="background:linear-gradient(135deg,#dc2626,#ef4444);">FO</div>
+            <div>
+              <div class="author-name">Fatima O.</div>
+              <div class="author-loc"><i class="bi bi-geo-alt-fill me-1"></i>Manchester, UK → Lagos, Nigeria</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trust bar -->
+    <div class="text-center mt-5">
+      <p class="text-muted mb-3 fw-semibold">Rated Excellent on</p>
+      <div class="d-flex flex-wrap justify-content-center gap-4 align-items-center">
+        <div class="d-flex align-items-center gap-2 text-success fw-bold">
+          <i class="bi bi-star-fill text-success fs-5"></i> 4.8/5 Trustpilot
+        </div>
+        <div class="d-flex align-items-center gap-2 text-primary fw-bold">
+          <i class="bi bi-google text-primary fs-5"></i> 4.9/5 Google Reviews
+        </div>
+        <div class="d-flex align-items-center gap-2 fw-bold" style="color:#635bff;">
+          <i class="bi bi-app-indicator fs-5" style="color:#635bff;"></i> 4.8/5 App Store
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CTA BANNER
+============================================================ -->
+<section id="cta">
+  <div class="container text-center">
+    <span class="section-label" style="background:rgba(255,255,255,.15);color:#bfdbfe;">Get Started Today</span>
+    <h2 class="mt-2 mb-3">Start Sending Money in Minutes</h2>
+    <p class="mb-4">
+      Join over 2 million customers who trust GMT Ltd for fast, secure, and affordable international transfers.
+    </p>
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+      <a href="#" class="btn btn-warning btn-lg fw-bold px-5 py-3">
+        <i class="bi bi-person-plus-fill me-2"></i>Create Free Account
+      </a>
+      <a href="#track" class="btn btn-outline-light btn-lg fw-semibold px-5 py-3">
+        <i class="bi bi-geo-alt me-2"></i>Track a Transfer
+      </a>
+    </div>
+    <p class="mt-4 mb-0 text-white-50 small">
+      <i class="bi bi-shield-lock me-1"></i> No commitment. No hidden fees. Cancel anytime.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
+<footer>
+  <div class="container">
+    <div class="row gy-4">
+      <div class="col-lg-4">
+        <div class="footer-brand">Global Money <span>Transfer</span> Ltd</div>
+        <p class="footer-desc mt-2">
+          Empowering people to send money home safely, quickly, and affordably since 2008.
+          Regulated and trusted worldwide.
+        </p>
+        <div class="trust-badges">
+          <div class="trust-badge"><i class="bi bi-patch-check-fill text-primary"></i> FCA Regulated</div>
+          <div class="trust-badge"><i class="bi bi-patch-check-fill text-primary"></i> PCI DSS Compliant</div>
+          <div class="trust-badge"><i class="bi bi-shield-fill-check text-success"></i> SSL Secured</div>
+        </div>
+        <div class="social-links mt-3 d-flex gap-2">
+          <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+          <a href="#" aria-label="Twitter/X"><i class="bi bi-twitter-x"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+          <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+          <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+        </div>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <div class="footer-heading">Services</div>
+        <a href="#" class="footer-link">International Transfers</a>
+        <a href="#" class="footer-link">Business Payments</a>
+        <a href="#" class="footer-link">Currency Exchange</a>
+        <a href="#" class="footer-link">Mobile Wallets</a>
+        <a href="#" class="footer-link">Cash Pickup</a>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <div class="footer-heading">Company</div>
+        <a href="#" class="footer-link">About Us</a>
+        <a href="#" class="footer-link">Careers</a>
+        <a href="#" class="footer-link">Press & Media</a>
+        <a href="#" class="footer-link">Partners</a>
+        <a href="#" class="footer-link">Blog</a>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <div class="footer-heading">Support</div>
+        <a href="#" class="footer-link">Help Centre</a>
+        <a href="#track" class="footer-link">Track Transfer</a>
+        <a href="#" class="footer-link">Fee Calculator</a>
+        <a href="#" class="footer-link">Compliance</a>
+        <a href="#" class="footer-link">Complaints</a>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <div class="footer-heading">Contact</div>
+        <a href="tel:+448001234567" class="footer-link"><i class="bi bi-telephone me-2"></i>+44 800 123 4567</a>
+        <a href="mailto:support@globalmt.com" class="footer-link"><i class="bi bi-envelope me-2"></i>support@globalmt.com</a>
+        <a href="#" class="footer-link"><i class="bi bi-chat-dots me-2"></i>Live Chat</a>
+        <div class="mt-3" style="font-size:.8rem;color:rgba(255,255,255,.4);">
+          <i class="bi bi-clock me-1"></i>Mon–Sun: 24/7 Support
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>&copy; 2024 Global Money Transfer Ltd. All rights reserved.</span>
+      <div class="d-flex flex-wrap gap-3">
+        <a href="#" class="footer-link mb-0">Privacy Policy</a>
+        <a href="#" class="footer-link mb-0">Terms of Use</a>
+        <a href="#" class="footer-link mb-0">Cookie Policy</a>
+        <a href="#" class="footer-link mb-0">Accessibility</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap 5.3 JS Bundle -->
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+  crossorigin="anonymous"
+></script>
+
+<script>
+  /* ── Navbar scroll shadow ── */
+  window.addEventListener('scroll', () => {
+    document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  /* ── Rate calculator ── */
+  const rates = {
+    'INR': 83.2, 'HKD': 7.8, 'KES': 129.5,
+    'MXN': 17.1, 'AED': 3.673, 'JPY': 130
+  };
+  const fromRates = {
+    '1': 1, '0.93': 0.93, '0.80': 0.80, '1.36': 1.36, '1.54': 1.54
+  };
+
+  function calcRate() {
+    const amount   = parseFloat(document.getElementById('sendAmount').value) || 0;
+    const fromVal  = parseFloat(document.getElementById('fromCurrency').value);
+    const toKey    = document.getElementById('toCurrency').value;
+    const toRate   = parseFloat(toKey);
+    const fromCurr = document.getElementById('fromCurrency').options[document.getElementById('fromCurrency').selectedIndex].text;
+    const toCurr   = document.getElementById('toCurrency').options[document.getElementById('toCurrency').selectedIndex].text;
+
+    const amountInUSD = amount / fromVal;
+    const result = (amountInUSD * toRate).toFixed(2);
+    const rate   = (toRate / fromVal).toFixed(4);
+
+    document.getElementById('receiveAmount').value = parseFloat(result).toLocaleString('en-US', {minimumFractionDigits: 2});
+    document.getElementById('rateLabel').textContent = `1 ${fromCurr} = `;
+    document.getElementById('rateValue').textContent = `${rate} ${toCurr}`;
+  }
+  calcRate();
+
+  /* ── Transfer tracker ── */
+  const mockTransfers = {
+    'GMT-2024-001234': {
+      status: 'Delivered',
+      badge: 'success',
+      title: 'Transfer Delivered Successfully',
+      meta: '$500 → ₹41,600 · Ref: GMT-2024-001234',
+      steps: [
+        { label: 'Transfer Initiated',       time: 'May 1, 2024 · 09:14 AM', state: 'done'    },
+        { label: 'Payment Received',          time: 'May 1, 2024 · 09:16 AM', state: 'done'    },
+        { label: 'Processing',                time: 'May 1, 2024 · 09:20 AM', state: 'done'    },
+        { label: 'Funds Sent to Recipient',   time: 'May 1, 2024 · 09:45 AM', state: 'done'    },
+        { label: 'Delivered',                 time: 'May 1, 2024 · 09:48 AM', state: 'done'    },
+      ]
+    },
+    'GMT-2024-005678': {
+      status: 'Processing',
+      badge: 'warning text-dark',
+      title: 'Transfer In Progress',
+      meta: '$250 → €232 · Ref: GMT-2024-005678',
+      steps: [
+        { label: 'Transfer Initiated',       time: 'May 5, 2024 · 11:02 AM', state: 'done'    },
+        { label: 'Payment Received',          time: 'May 5, 2024 · 11:04 AM', state: 'done'    },
+        { label: 'Processing',                time: 'May 5, 2024 · 11:10 AM', state: 'active'  },
+        { label: 'Funds Sent to Recipient',   time: 'Estimated: Today',        state: 'pending' },
+        { label: 'Delivered',                 time: 'Estimated: Today',        state: 'pending' },
+      ]
+    },
+  };
+
+  function trackTransfer() {
+    const ref = document.getElementById('trackingRef').value.trim().toUpperCase();
+    const resultEl = document.getElementById('statusResult');
+    const errorEl  = document.getElementById('statusError');
+
+    resultEl.classList.remove('show');
+    errorEl.classList.remove('show');
+
+    if (!ref) {
+      document.getElementById('trackingRef').focus();
+      return;
+    }
+
+    const transfer = mockTransfers[ref];
+
+    if (!transfer) {
+      setTimeout(() => errorEl.classList.add('show'), 200);
+      return;
+    }
+
+    document.getElementById('statusTitle').textContent = transfer.title;
+    document.getElementById('statusMeta').textContent  = transfer.meta;
+
+    const badge = document.getElementById('statusBadge');
+    badge.className = `badge rounded-pill fw-semibold bg-${transfer.badge}`;
+    badge.textContent = transfer.status;
+
+    const timeline = document.getElementById('statusTimeline');
+    timeline.innerHTML = transfer.steps.map(s => {
+      const icons = { done: '✓', active: '→', pending: '○' };
+      return `
+        <li>
+          <div class="status-dot ${s.state}">${icons[s.state]}</div>
+          <div class="status-info">
+            <div class="title">${s.label}</div>
+            <div class="time">${s.time}</div>
+          </div>
+        </li>`;
+    }).join('');
+
+    const alertClass = transfer.badge === 'success'
+      ? 'alert-success' : (transfer.badge.includes('warning') ? 'alert-warning' : 'alert-primary');
+    resultEl.className = `status-result alert ${alertClass} show`;
+  }
+
+  /* Allow Enter key in tracking input */
+  document.getElementById('trackingRef').addEventListener('keydown', e => {
+    if (e.key === 'Enter') trackTransfer();
+  });
+</script>
+</body>
+</html>
