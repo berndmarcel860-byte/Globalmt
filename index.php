@@ -5,14 +5,6 @@ declare(strict_types=1);
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/utils.php';
 
-const STATUS_SUMMARIES = [
-    'Pending' => 'Your transfer has been created and is awaiting the next processing step.',
-    'Processing' => 'Your transfer is currently being reviewed and prepared for payout.',
-    'Sent' => 'Funds have been dispatched and are on the way to the recipient bank.',
-    'Delivered' => 'Your transfer has been successfully completed and delivered.',
-    'Failed' => 'We could not complete this transfer. Please contact support for assistance.',
-];
-
 function e(string $value): string
 {
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
@@ -66,7 +58,15 @@ function formatTransferDate(string $date): string
 
 function statusSummary(string $status): string
 {
-    return STATUS_SUMMARIES[$status] ?? 'Your transfer status is currently being updated.';
+    static $summaries = [
+        'Pending' => 'Your transfer has been created and is awaiting the next processing step.',
+        'Processing' => 'Your transfer is currently being reviewed and prepared for payout.',
+        'Sent' => 'Funds have been dispatched and are on the way to the recipient bank.',
+        'Delivered' => 'Your transfer has been successfully completed and delivered.',
+        'Failed' => 'We could not complete this transfer. Please contact support for assistance.',
+    ];
+
+    return $summaries[$status] ?? 'Your transfer status is currently being updated.';
 }
 
 $reference = strtoupper(trim((string)($_GET['reference'] ?? '')));
@@ -1011,7 +1011,7 @@ if ($reference !== '') {
               <div class="tracking-reference-chip"><i class="bi bi-upc-scan"></i> <?= e((string)$transfer['reference_number']) ?></div>
               <div class="mt-3 d-flex flex-wrap align-items-center gap-2">
                 <span class="badge rounded-pill <?= e($meta['badgeClass']) ?> px-3 py-2"><?= e($status) ?></span>
-                <span class="text-white-50 small">Transaction Date <?= e(formatTransferDate((string)$transfer['transaction_date'])) ?></span>
+                <span class="text-white-50 small">Transaction date <?= e(formatTransferDate((string)$transfer['transaction_date'])) ?></span>
               </div>
             </div>
             <div class="text-start text-md-end">
@@ -1711,6 +1711,7 @@ if ($reference !== '') {
 ></script>
 
 <script>
+  // Small delay lets the track section settle into view before the modal opens.
   const MODAL_OPEN_DELAY_MS = 250;
 
   /* ── Navbar scroll shadow ── */
