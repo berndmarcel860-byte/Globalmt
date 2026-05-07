@@ -1712,7 +1712,7 @@ if ($reference !== '') {
 
 <script>
   // Small delay lets the track section settle into view before the modal opens.
-  const MODAL_OPEN_DELAY_MS = 250;
+  const MODAL_OPEN_DELAY = 250;
 
   /* ── Navbar scroll shadow ── */
   window.addEventListener('scroll', () => {
@@ -1784,7 +1784,7 @@ if ($reference !== '') {
     const modalElement = document.getElementById('trackingDetailsModal');
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement);
-      setTimeout(() => modal.show(), MODAL_OPEN_DELAY_MS);
+      setTimeout(() => modal.show(), MODAL_OPEN_DELAY);
       modalElement.addEventListener('hidden.bs.modal', () => {
         const input = document.getElementById('trackingRef');
         if (input) {
