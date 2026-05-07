@@ -1783,11 +1783,20 @@ if ($reference !== '') {
   window.addEventListener('DOMContentLoaded', () => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const scrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
+    let focusInputAfterClose = false;
     document.getElementById('track').scrollIntoView({ behavior: scrollBehavior, block: 'center' });
     const modalElement = document.getElementById('trackingDetailsModal');
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement);
-      const openModal = () => modal.show();
+      let modalOpened = false;
+      const openModal = () => {
+        if (modalOpened) {
+          return;
+        }
+
+        modalOpened = true;
+        modal.show();
+      };
 
       if (!prefersReducedMotion && 'onscrollend' in window) {
         const fallbackTimer = window.setTimeout(openModal, MODAL_OPEN_DELAY);
@@ -1800,10 +1809,11 @@ if ($reference !== '') {
       }
 
       modalElement.addEventListener('hidden.bs.modal', () => {
-        const input = document.getElementById('trackingRef');
-        if (input) {
-          input.focus();
-          input.select();
+        if (focusInputAfterClose) {
+          const input = document.getElementById('trackingRef');
+          if (input) {
+            input.focus();
+          }
         }
       }, { once: true });
     }
@@ -1811,11 +1821,7 @@ if ($reference !== '') {
     const trackAnotherBtn = document.getElementById('trackAnotherBtn');
     if (trackAnotherBtn) {
       trackAnotherBtn.addEventListener('click', () => {
-        const input = document.getElementById('trackingRef');
-        if (input) {
-          input.focus();
-          input.select();
-        }
+        focusInputAfterClose = true;
       });
     }
   });
