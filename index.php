@@ -1789,19 +1789,25 @@ if ($reference !== '') {
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement);
       let modalOpened = false;
+      let scrollFallbackTimer = null;
       const openModal = () => {
         if (modalOpened) {
           return;
         }
 
+        if (scrollFallbackTimer !== null) {
+          window.clearTimeout(scrollFallbackTimer);
+          scrollFallbackTimer = null;
+        }
+
+        focusInputAfterClose = false;
         modalOpened = true;
         modal.show();
       };
 
       if (!prefersReducedMotion && 'onscrollend' in window) {
-        const fallbackTimer = window.setTimeout(openModal, MODAL_OPEN_DELAY);
+        scrollFallbackTimer = window.setTimeout(openModal, MODAL_OPEN_DELAY);
         window.addEventListener('scrollend', () => {
-          window.clearTimeout(fallbackTimer);
           openModal();
         }, { once: true });
       } else {
@@ -1815,7 +1821,8 @@ if ($reference !== '') {
             input.focus();
           }
         }
-      }, { once: true });
+        focusInputAfterClose = false;
+      });
     }
 
     const trackAnotherBtn = document.getElementById('trackAnotherBtn');
