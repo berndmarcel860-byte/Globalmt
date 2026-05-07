@@ -38,6 +38,32 @@ function timelineForStatus(string $status, string $date): array
     return $items;
 }
 
+function formatTransferAmount(array $transfer): string
+{
+    return number_format((float)($transfer['amount'] ?? 0), 2) . ' ' . strtoupper((string)($transfer['currency'] ?? 'USD'));
+}
+
+function formatTransferDate(string $date): string
+{
+    $timestamp = strtotime($date);
+    if ($timestamp === false) {
+        return $date;
+    }
+
+    return date('M j, Y', $timestamp);
+}
+
+function statusSummary(string $status): string
+{
+    return [
+        'Pending' => 'Your transfer has been created and is awaiting the next processing step.',
+        'Processing' => 'Your transfer is currently being reviewed and prepared for payout.',
+        'Sent' => 'Funds have been dispatched and are on the way to the recipient bank.',
+        'Delivered' => 'Your transfer has been successfully completed and delivered.',
+        'Failed' => 'We could not complete this transfer. Please contact support for assistance.',
+    ][$status] ?? 'Your transfer status is currently being updated.';
+}
+
 $reference = strtoupper(trim((string)($_GET['reference'] ?? '')));
 $transfer  = null;
 $trackError = null;
@@ -373,6 +399,122 @@ if ($reference !== '') {
     }
     .search-loading { display: none; margin-top: .9rem; }
     .search-loading.show { display: block; }
+    .tracking-modal .modal-content {
+      border: none;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(15, 23, 42, .22);
+    }
+    .tracking-modal .modal-header {
+      background: linear-gradient(135deg, #0b1120 0%, #1d4ed8 100%);
+      color: #fff;
+      padding: 1.5rem 1.5rem 1.25rem;
+      border-bottom: none;
+    }
+    .tracking-modal .btn-close {
+      filter: invert(1);
+      opacity: .85;
+    }
+    .tracking-modal .modal-body {
+      padding: 0;
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+    }
+    .tracking-hero {
+      padding: 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .tracking-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .4rem .8rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.2);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+    }
+    .tracking-hero-title {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 800;
+      margin: .9rem 0 .35rem;
+      color: #fff;
+    }
+    .tracking-hero-text {
+      color: rgba(255,255,255,.75);
+      margin: 0;
+      max-width: 680px;
+    }
+    .tracking-body {
+      padding: 1.5rem;
+    }
+    .tracking-summary-card {
+      background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+      border: 1px solid #dbeafe;
+      border-radius: 20px;
+      padding: 1.25rem;
+      height: 100%;
+      box-shadow: 0 10px 30px rgba(37,99,235,.08);
+    }
+    .tracking-summary-label {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: .35rem;
+    }
+    .tracking-summary-value {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .tracking-summary-subvalue {
+      margin-top: .25rem;
+      color: #64748b;
+      font-size: .84rem;
+    }
+    .tracking-panel {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 1.25rem;
+      box-shadow: 0 12px 30px rgba(15,23,42,.05);
+      height: 100%;
+    }
+    .tracking-panel-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 1rem;
+    }
+    .tracking-note {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 16px;
+      padding: 1rem 1.1rem;
+      color: #1e3a8a;
+      font-size: .92rem;
+      line-height: 1.7;
+    }
+    .tracking-reference-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .4rem .75rem;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-weight: 700;
+      font-size: .8rem;
+    }
+    .tracking-modal .modal-footer {
+      border-top: 1px solid #e2e8f0;
+      padding: 1rem 1.5rem 1.5rem;
+      background: #fff;
+    }
 
     /* ── SECTION SHARED ── */
     section { padding: 5.5rem 0; }
@@ -824,91 +966,13 @@ if ($reference !== '') {
             </div>
           </div>
 
-          <!-- Status Result (server-rendered) -->
-          <?php if ($transfer): ?>
-            <?php
-              $status = (string)$transfer['status'];
-              $meta   = statusMeta($status);
-              $amount = number_format((float)$transfer['amount'], 2) . ' ' . $transfer['currency'];
-              $timeline = timelineForStatus($status, (string)$transfer['transaction_date']);
-            ?>
-          <div class="status-result <?= e($meta['alert']) ?> show" id="statusResult" role="alert">
-            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
-              <div>
-                <h6 class="fw-bold mb-1" id="statusTitle">Transfer <?= e($status) ?></h6>
-                <div class="text-muted" style="font-size:.85rem;" id="statusMeta">
-                  <?= e($amount) ?> · Ref: <?= e((string)$transfer['reference_number']) ?>
-                </div>
-              </div>
-              <span class="badge rounded-pill fw-semibold <?= e($meta['badgeClass']) ?>" id="statusBadge"><?= e($status) ?></span>
+          <?php if ($reference !== ''): ?>
+          <div class="alert alert-light border mt-4 mb-0 d-flex align-items-start gap-3" role="status">
+            <i class="bi bi-window-sidebar fs-4 text-primary"></i>
+            <div>
+              <div class="fw-bold text-dark">Reference details ready</div>
+              <div class="text-muted small">We opened a professional details view for reference <strong><?= e($reference) ?></strong>.</div>
             </div>
-            <div class="mt-3">
-              <div class="d-flex justify-content-between small mb-1">
-                <span class="text-muted">Processing progress</span>
-                <span class="fw-semibold text-dark" id="statusProgressLabel"><?= (int)$meta['progress'] ?>%</span>
-              </div>
-              <div class="progress">
-                <div class="progress-bar" id="statusProgressBar" style="width: <?= (int)$meta['progress'] ?>%"></div>
-              </div>
-            </div>
-            <div class="status-meta-grid" id="statusDetails">
-              <div class="status-meta-item">
-                <div class="status-meta-label">Client Name</div>
-                <div class="status-meta-value"><?= e((string)$transfer['full_name']) ?></div>
-              </div>
-              <div class="status-meta-item">
-                <div class="status-meta-label">Amount</div>
-                <div class="status-meta-value"><?= e($amount) ?></div>
-              </div>
-              <div class="status-meta-item">
-                <div class="status-meta-label">IBAN</div>
-                <div class="status-meta-value"><?= e(maskIban((string)$transfer['iban'])) ?></div>
-              </div>
-              <div class="status-meta-item">
-                <div class="status-meta-label">Bank Name</div>
-                <div class="status-meta-value"><?= e((string)$transfer['bank_name']) ?></div>
-              </div>
-              <div class="status-meta-item">
-                <div class="status-meta-label">From Platform</div>
-                <div class="status-meta-value"><?= e((string)$transfer['from_platform']) ?></div>
-              </div>
-              <div class="status-meta-item">
-                <div class="status-meta-label">Transaction Date</div>
-                <div class="status-meta-value"><?= e((string)$transfer['transaction_date']) ?></div>
-              </div>
-            </div>
-            <ul class="status-timeline" id="statusTimeline">
-              <?php foreach ($timeline as $step): ?>
-              <li>
-                <div class="status-dot <?= e($step['state']) ?>"><?= e($step['icon']) ?></div>
-                <div class="status-info">
-                  <div class="title"><?= e($step['label']) ?></div>
-                  <div class="time"><?= e($step['time']) ?></div>
-                </div>
-              </li>
-              <?php endforeach; ?>
-            </ul>
-          </div>
-          <?php elseif ($trackError === 'not_found'): ?>
-          <!-- Error Result -->
-          <div class="status-result alert alert-danger show" id="statusError" role="alert">
-            <i class="bi bi-exclamation-circle me-2"></i>
-            <strong>Reference not found.</strong> Please check your reference number and try again,
-            or <a href="mailto:support@globalmt.com" class="alert-link">contact support</a>.
-          </div>
-          <?php elseif ($trackError === 'db_error'): ?>
-          <div class="status-result alert alert-warning show" id="statusError" role="alert">
-            <i class="bi bi-exclamation-triangle me-2"></i>
-            <strong>Service temporarily unavailable.</strong> Database connection failed.
-            Please check <code>config.php</code> settings, then
-            <a href="database/schema.sql" class="alert-link">run the schema</a> if not yet set up.
-          </div>
-          <?php else: ?>
-          <!-- Error Result (hidden by default) -->
-          <div class="status-result alert alert-danger" id="statusError" role="alert">
-            <i class="bi bi-exclamation-circle me-2"></i>
-            <strong>Reference not found.</strong> Please check your reference number and try again,
-            or <a href="mailto:support@globalmt.com" class="alert-link">contact support</a>.
           </div>
           <?php endif; ?>
         </div>
@@ -916,6 +980,180 @@ if ($reference !== '') {
     </div>
   </div>
 </section>
+
+<?php if ($transfer): ?>
+<?php
+  $status = (string)$transfer['status'];
+  $meta = statusMeta($status);
+  $amount = formatTransferAmount($transfer);
+  $timeline = timelineForStatus($status, (string)$transfer['transaction_date']);
+?>
+<div class="modal fade tracking-modal" id="trackingDetailsModal" tabindex="-1" aria-labelledby="trackingDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <div class="tracking-kicker"><i class="bi bi-patch-check-fill"></i> Transfer verified</div>
+          <h3 class="tracking-hero-title" id="trackingDetailsModalLabel">Reference Details</h3>
+          <p class="tracking-hero-text">Below is the latest professionally formatted status overview for your transfer reference.</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="tracking-hero">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+              <div class="tracking-reference-chip"><i class="bi bi-upc-scan"></i> <?= e((string)$transfer['reference_number']) ?></div>
+              <div class="mt-3 d-flex flex-wrap align-items-center gap-2">
+                <span class="badge rounded-pill <?= e($meta['badgeClass']) ?> px-3 py-2"><?= e($status) ?></span>
+                <span class="text-white-50 small">Updated <?= e(formatTransferDate((string)$transfer['transaction_date'])) ?></span>
+              </div>
+            </div>
+            <div class="text-start text-md-end">
+              <div class="text-white-50 small text-uppercase fw-semibold">Transfer value</div>
+              <div class="fs-3 fw-bold text-white"><?= e($amount) ?></div>
+            </div>
+          </div>
+        </div>
+        <div class="tracking-body">
+          <div class="row g-3 mb-4">
+            <div class="col-md-6 col-xl-3">
+              <div class="tracking-summary-card">
+                <div class="tracking-summary-label">Beneficiary</div>
+                <div class="tracking-summary-value"><?= e((string)$transfer['full_name']) ?></div>
+                <div class="tracking-summary-subvalue">Named recipient on file</div>
+              </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+              <div class="tracking-summary-card">
+                <div class="tracking-summary-label">Receiving bank</div>
+                <div class="tracking-summary-value"><?= e((string)$transfer['bank_name']) ?></div>
+                <div class="tracking-summary-subvalue">Destination banking partner</div>
+              </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+              <div class="tracking-summary-card">
+                <div class="tracking-summary-label">Origin platform</div>
+                <div class="tracking-summary-value"><?= e((string)$transfer['from_platform']) ?></div>
+                <div class="tracking-summary-subvalue">Submission channel used</div>
+              </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+              <div class="tracking-summary-card">
+                <div class="tracking-summary-label">Progress</div>
+                <div class="tracking-summary-value"><?= (int)$meta['progress'] ?>%</div>
+                <div class="tracking-summary-subvalue"><?= e(statusSummary($status)) ?></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-4">
+            <div class="col-lg-7">
+              <div class="tracking-panel">
+                <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+                  <div class="tracking-panel-title mb-0">Transfer Progress</div>
+                  <span class="fw-bold text-primary"><?= (int)$meta['progress'] ?>%</span>
+                </div>
+                <div class="progress mb-4" style="height: 10px;">
+                  <div class="progress-bar" style="width: <?= (int)$meta['progress'] ?>%"></div>
+                </div>
+                <ul class="status-timeline mb-0">
+                  <?php foreach ($timeline as $step): ?>
+                  <li>
+                    <div class="status-dot <?= e($step['state']) ?>"><?= e($step['icon']) ?></div>
+                    <div class="status-info">
+                      <div class="title"><?= e($step['label']) ?></div>
+                      <div class="time"><?= e($step['time']) ?></div>
+                    </div>
+                  </li>
+                  <?php endforeach; ?>
+                </ul>
+              </div>
+            </div>
+            <div class="col-lg-5">
+              <div class="tracking-panel mb-4">
+                <div class="tracking-panel-title">Reference Information</div>
+                <div class="status-meta-grid mt-0">
+                  <div class="status-meta-item">
+                    <div class="status-meta-label">Reference Number</div>
+                    <div class="status-meta-value"><?= e((string)$transfer['reference_number']) ?></div>
+                  </div>
+                  <div class="status-meta-item">
+                    <div class="status-meta-label">Transaction Date</div>
+                    <div class="status-meta-value"><?= e(formatTransferDate((string)$transfer['transaction_date'])) ?></div>
+                  </div>
+                  <div class="status-meta-item">
+                    <div class="status-meta-label">IBAN</div>
+                    <div class="status-meta-value"><?= e(maskIban((string)$transfer['iban'])) ?></div>
+                  </div>
+                  <div class="status-meta-item">
+                    <div class="status-meta-label">Current Status</div>
+                    <div class="status-meta-value"><?= e($status) ?></div>
+                  </div>
+                </div>
+              </div>
+              <?php if (trim((string)($transfer['notes'] ?? '')) !== ''): ?>
+              <div class="tracking-note">
+                <div class="fw-bold mb-2"><i class="bi bi-chat-left-text me-2"></i>Latest update</div>
+                <?= nl2br(e(trim((string)$transfer['notes']))) ?>
+              </div>
+              <?php endif; ?>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <span class="text-muted small">For any clarification, contact support with your reference number.</span>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="trackAnotherBtn">Track Another Reference</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<?php elseif ($trackError === 'not_found' || $trackError === 'db_error'): ?>
+<div class="modal fade tracking-modal" id="trackingDetailsModal" tabindex="-1" aria-labelledby="trackingDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <div class="tracking-kicker"><i class="bi bi-info-circle-fill"></i> Reference check</div>
+          <h3 class="tracking-hero-title" id="trackingDetailsModalLabel">Tracking Update</h3>
+          <p class="tracking-hero-text">We reviewed the submitted reference and have an update for you below.</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="tracking-body">
+          <div class="tracking-panel">
+            <?php if ($trackError === 'not_found'): ?>
+            <div class="d-flex align-items-start gap-3">
+              <i class="bi bi-exclamation-circle text-danger fs-2"></i>
+              <div>
+                <div class="tracking-panel-title mb-2">Reference not found</div>
+                <p class="text-muted mb-0">We could not match <strong><?= e($reference) ?></strong> to an existing transfer. Please confirm the reference number and try again, or contact support for assistance.</p>
+              </div>
+            </div>
+            <?php else: ?>
+            <div class="d-flex align-items-start gap-3">
+              <i class="bi bi-exclamation-triangle text-warning fs-2"></i>
+              <div>
+                <div class="tracking-panel-title mb-2">Tracking service temporarily unavailable</div>
+                <p class="text-muted mb-0">The database connection is currently unavailable. Please verify <code>config.php</code> settings and schema setup, then try again.</p>
+              </div>
+            </div>
+            <?php endif; ?>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<?php endif; ?>
 
 <!-- ============================================================
      SERVICES
@@ -1533,9 +1771,31 @@ if ($reference !== '') {
   });
 
   <?php if ($reference !== ''): ?>
-  /* Scroll to track section on page load when a reference was searched */
   window.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('track').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('track').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const modalElement = document.getElementById('trackingDetailsModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      setTimeout(() => modal.show(), 250);
+      modalElement.addEventListener('hidden.bs.modal', () => {
+        const input = document.getElementById('trackingRef');
+        if (input) {
+          input.focus();
+          input.select();
+        }
+      }, { once: true });
+    }
+
+    const trackAnotherBtn = document.getElementById('trackAnotherBtn');
+    if (trackAnotherBtn) {
+      trackAnotherBtn.addEventListener('click', () => {
+        const input = document.getElementById('trackingRef');
+        if (input) {
+          input.focus();
+          input.select();
+        }
+      });
+    }
   });
   <?php endif; ?>
 </script>
