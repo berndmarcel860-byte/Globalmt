@@ -282,6 +282,33 @@
     .status-dot.pending{ background: #e2e8f0; color: #94a3b8; }
     .status-info .title { font-weight: 700; font-size: .9rem; color: #0b1120; }
     .status-info .time  { font-size: .8rem; color: #94a3b8; }
+    .status-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    .status-meta-item {
+      background: rgba(255,255,255,.6);
+      border: 1px solid rgba(148,163,184,.3);
+      border-radius: 10px;
+      padding: .65rem .75rem;
+    }
+    .status-meta-label {
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      color: #64748b;
+      margin-bottom: .15rem;
+    }
+    .status-meta-value {
+      font-size: .86rem;
+      color: #0f172a;
+      font-weight: 600;
+      word-break: break-word;
+    }
+    .search-loading { display: none; margin-top: .9rem; }
+    .search-loading.show { display: block; }
 
     /* ── SECTION SHARED ── */
     section { padding: 5.5rem 0; }
@@ -718,6 +745,19 @@
           <p class="text-muted mt-2" style="font-size:.82rem;">
             Your reference number was emailed to you when your transfer was initiated.
           </p>
+          <div class="text-muted" style="font-size:.8rem;">
+            Admin can manage references in <a href="admin.html">Admin Dashboard</a>.
+          </div>
+
+          <div class="search-loading" id="searchLoading">
+            <div class="d-flex align-items-center justify-content-between mb-1">
+              <span class="small text-muted">Searching transfer...</span>
+              <span class="small text-muted" id="searchLoadingPercent">0%</span>
+            </div>
+            <div class="progress" role="progressbar" aria-label="Searching transfer">
+              <div class="progress-bar progress-bar-striped progress-bar-animated" id="searchLoadingBar" style="width:0%"></div>
+            </div>
+          </div>
 
           <!-- Status Result -->
           <div class="status-result alert alert-primary" id="statusResult" role="alert">
@@ -728,6 +768,16 @@
               </div>
               <span class="badge rounded-pill bg-warning text-dark fw-semibold" id="statusBadge">Processing</span>
             </div>
+            <div class="mt-3">
+              <div class="d-flex justify-content-between small mb-1">
+                <span class="text-muted">Processing progress</span>
+                <span class="fw-semibold text-dark" id="statusProgressLabel">0%</span>
+              </div>
+              <div class="progress">
+                <div class="progress-bar" id="statusProgressBar" style="width:0%"></div>
+              </div>
+            </div>
+            <div class="status-meta-grid" id="statusDetails"></div>
             <ul class="status-timeline" id="statusTimeline"></ul>
           </div>
 
@@ -1327,39 +1377,186 @@
   calcRate();
 
   /* ── Transfer tracker ── */
-  const mockTransfers = {
-    'GMT-2024-001234': {
-      status: 'Delivered',
-      badge: 'success',
-      title: 'Transfer Delivered Successfully',
-      meta: '$500 → ₹41,600 · Ref: GMT-2024-001234',
-      steps: [
-        { label: 'Transfer Initiated',       time: 'May 1, 2024 · 09:14 AM', state: 'done'    },
-        { label: 'Payment Received',          time: 'May 1, 2024 · 09:16 AM', state: 'done'    },
-        { label: 'Processing',                time: 'May 1, 2024 · 09:20 AM', state: 'done'    },
-        { label: 'Funds Sent to Recipient',   time: 'May 1, 2024 · 09:45 AM', state: 'done'    },
-        { label: 'Delivered',                 time: 'May 1, 2024 · 09:48 AM', state: 'done'    },
-      ]
-    },
-    'GMT-2024-005678': {
-      status: 'Processing',
-      badge: 'warning text-dark',
-      title: 'Transfer In Progress',
-      meta: '$250 → €232 · Ref: GMT-2024-005678',
-      steps: [
-        { label: 'Transfer Initiated',       time: 'May 5, 2024 · 11:02 AM', state: 'done'    },
-        { label: 'Payment Received',          time: 'May 5, 2024 · 11:04 AM', state: 'done'    },
-        { label: 'Processing',                time: 'May 5, 2024 · 11:10 AM', state: 'active'  },
-        { label: 'Funds Sent to Recipient',   time: 'Estimated: Today',        state: 'pending' },
-        { label: 'Delivered',                 time: 'Estimated: Today',        state: 'pending' },
-      ]
-    },
+  const STORAGE_KEY = 'gmt_transfers';
+  const STATUS_META = {
+    Pending:    { badge: 'secondary',         alert: 'alert-secondary', progress: 20 },
+    Processing: { badge: 'warning text-dark', alert: 'alert-warning',   progress: 60 },
+    Sent:       { badge: 'info text-dark',    alert: 'alert-info',      progress: 85 },
+    Delivered:  { badge: 'success',           alert: 'alert-success',   progress: 100 },
+    Failed:     { badge: 'danger',            alert: 'alert-danger',    progress: 45 },
   };
+
+  const defaultTransfers = [
+    {
+      referenceNumber: 'GMT-2024-001234',
+      fullName: 'Rohan Sharma',
+      amount: 500,
+      currency: 'USD',
+      iban: 'GB29NWBK60161331926819',
+      bankName: 'State Bank of India',
+      fromPlatform: 'Web Portal',
+      status: 'Delivered',
+      transactionDate: '2024-05-01',
+      notes: 'Delivered to recipient account',
+      steps: [
+        { label: 'Transfer Initiated', time: 'May 1, 2024 · 09:14 AM', state: 'done' },
+        { label: 'Payment Received', time: 'May 1, 2024 · 09:16 AM', state: 'done' },
+        { label: 'Processing', time: 'May 1, 2024 · 09:20 AM', state: 'done' },
+        { label: 'Funds Sent to Recipient', time: 'May 1, 2024 · 09:45 AM', state: 'done' },
+        { label: 'Delivered', time: 'May 1, 2024 · 09:48 AM', state: 'done' },
+      ],
+    },
+    {
+      referenceNumber: 'GMT-2024-005678',
+      fullName: 'Maria Fernandes',
+      amount: 250,
+      currency: 'USD',
+      iban: 'DE89370400440532013000',
+      bankName: 'Deutsche Bank',
+      fromPlatform: 'Mobile App',
+      status: 'Processing',
+      transactionDate: '2024-05-05',
+      notes: 'Compliance check in progress',
+      steps: [
+        { label: 'Transfer Initiated', time: 'May 5, 2024 · 11:02 AM', state: 'done' },
+        { label: 'Payment Received', time: 'May 5, 2024 · 11:04 AM', state: 'done' },
+        { label: 'Processing', time: 'May 5, 2024 · 11:10 AM', state: 'active' },
+        { label: 'Funds Sent to Recipient', time: 'Estimated: Today', state: 'pending' },
+        { label: 'Delivered', time: 'Estimated: Today', state: 'pending' },
+      ],
+    },
+  ];
+
+  function seedTransfersIfEmpty() {
+    if (!localStorage.getItem(STORAGE_KEY)) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultTransfers));
+    }
+  }
+
+  function loadTransfers() {
+    seedTransfersIfEmpty();
+    try {
+      const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (_error) {
+      return [];
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+  }
+
+  function maskIban(iban) {
+    if (!iban) return 'N/A';
+    const text = String(iban).replace(/\s+/g, '');
+    if (text.length <= 8) return text;
+    return `${text.slice(0, 4)} •••• •••• ${text.slice(-4)}`;
+  }
+
+  function formatAmount(transfer) {
+    const amount = Number(transfer.amount || 0);
+    const currency = transfer.currency || 'USD';
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount);
+  }
+
+  function formatDate(dateValue) {
+    if (!dateValue) return 'N/A';
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return dateValue;
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function generateTimeline(status, dateValue) {
+    const labels = ['Transfer Initiated', 'Payment Received', 'Processing', 'Funds Sent to Recipient', 'Delivered'];
+    const statusIndex = { Pending: 0, Processing: 2, Sent: 3, Delivered: 4, Failed: 2 };
+    const current = statusIndex[status] ?? 2;
+    const baseTime = formatDate(dateValue);
+    return labels.map((label, idx) => ({
+      label,
+      time: idx <= current ? `${baseTime}` : 'Pending',
+      state: idx < current ? 'done' : (idx === current ? 'active' : 'pending'),
+    }));
+  }
+
+  function showSearchLoading() {
+    const wrap = document.getElementById('searchLoading');
+    const bar = document.getElementById('searchLoadingBar');
+    const percent = document.getElementById('searchLoadingPercent');
+    let value = 0;
+    wrap.classList.add('show');
+    const timer = setInterval(() => {
+      value = Math.min(value + 15, 90);
+      bar.style.width = `${value}%`;
+      percent.textContent = `${value}%`;
+    }, 90);
+    return () => {
+      clearInterval(timer);
+      bar.style.width = '100%';
+      percent.textContent = '100%';
+      setTimeout(() => {
+        wrap.classList.remove('show');
+        bar.style.width = '0%';
+        percent.textContent = '0%';
+      }, 250);
+    };
+  }
+
+  function renderTransferResult(transfer) {
+    const status = transfer.status || 'Processing';
+    const config = STATUS_META[status] || STATUS_META.Processing;
+    const timelineSteps = Array.isArray(transfer.steps) && transfer.steps.length
+      ? transfer.steps
+      : generateTimeline(status, transfer.transactionDate);
+
+    document.getElementById('statusTitle').textContent = `Transfer ${status}`;
+    document.getElementById('statusMeta').textContent = `${formatAmount(transfer)} · Ref: ${transfer.referenceNumber}`;
+    document.getElementById('statusProgressLabel').textContent = `${config.progress}%`;
+    document.getElementById('statusProgressBar').style.width = `${config.progress}%`;
+
+    const badge = document.getElementById('statusBadge');
+    badge.className = `badge rounded-pill fw-semibold bg-${config.badge}`;
+    badge.textContent = status;
+
+    const details = [
+      ['Client Name', transfer.fullName || 'N/A'],
+      ['Amount', formatAmount(transfer)],
+      ['IBAN', maskIban(transfer.iban)],
+      ['Bank Name', transfer.bankName || 'N/A'],
+      ['From Platform', transfer.fromPlatform || 'N/A'],
+      ['Transaction Date', formatDate(transfer.transactionDate)],
+    ];
+    document.getElementById('statusDetails').innerHTML = details.map(([label, value]) => `
+      <div class="status-meta-item">
+        <div class="status-meta-label">${escapeHtml(label)}</div>
+        <div class="status-meta-value">${escapeHtml(value)}</div>
+      </div>
+    `).join('');
+
+    const icons = { done: '✓', active: '→', pending: '○' };
+    document.getElementById('statusTimeline').innerHTML = timelineSteps.map((step) => `
+      <li>
+        <div class="status-dot ${escapeHtml(step.state || 'pending')}">${icons[step.state] || '○'}</div>
+        <div class="status-info">
+          <div class="title">${escapeHtml(step.label || 'Update')}</div>
+          <div class="time">${escapeHtml(step.time || '')}</div>
+        </div>
+      </li>
+    `).join('');
+
+    const resultEl = document.getElementById('statusResult');
+    resultEl.className = `status-result alert ${config.alert} show`;
+  }
 
   function trackTransfer() {
     const ref = document.getElementById('trackingRef').value.trim().toUpperCase();
     const resultEl = document.getElementById('statusResult');
-    const errorEl  = document.getElementById('statusError');
+    const errorEl = document.getElementById('statusError');
 
     resultEl.classList.remove('show');
     errorEl.classList.remove('show');
@@ -1369,36 +1566,16 @@
       return;
     }
 
-    const transfer = mockTransfers[ref];
-
-    if (!transfer) {
-      setTimeout(() => errorEl.classList.add('show'), 200);
-      return;
-    }
-
-    document.getElementById('statusTitle').textContent = transfer.title;
-    document.getElementById('statusMeta').textContent  = transfer.meta;
-
-    const badge = document.getElementById('statusBadge');
-    badge.className = `badge rounded-pill fw-semibold bg-${transfer.badge}`;
-    badge.textContent = transfer.status;
-
-    const timeline = document.getElementById('statusTimeline');
-    timeline.innerHTML = transfer.steps.map(s => {
-      const icons = { done: '✓', active: '→', pending: '○' };
-      return `
-        <li>
-          <div class="status-dot ${s.state}">${icons[s.state]}</div>
-          <div class="status-info">
-            <div class="title">${s.label}</div>
-            <div class="time">${s.time}</div>
-          </div>
-        </li>`;
-    }).join('');
-
-    const alertClass = transfer.badge === 'success'
-      ? 'alert-success' : (transfer.badge.includes('warning') ? 'alert-warning' : 'alert-primary');
-    resultEl.className = `status-result alert ${alertClass} show`;
+    const stopLoading = showSearchLoading();
+    window.setTimeout(() => {
+      const transfer = loadTransfers().find((item) => String(item.referenceNumber || '').toUpperCase() === ref);
+      stopLoading();
+      if (!transfer) {
+        errorEl.classList.add('show');
+        return;
+      }
+      renderTransferResult(transfer);
+    }, 700);
   }
 
   /* Allow Enter key in tracking input */
