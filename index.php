@@ -50,7 +50,7 @@ function formatTransferDate(string $date): string
         return $date;
     }
 
-    return date('M j, Y', $timestamp);
+    return date('Y-m-d', $timestamp);
 }
 
 function statusSummary(string $status): string
@@ -1006,7 +1006,7 @@ if ($reference !== '') {
               <div class="tracking-reference-chip"><i class="bi bi-upc-scan"></i> <?= e((string)$transfer['reference_number']) ?></div>
               <div class="mt-3 d-flex flex-wrap align-items-center gap-2">
                 <span class="badge rounded-pill <?= e($meta['badgeClass']) ?> px-3 py-2"><?= e($status) ?></span>
-                <span class="text-white-50 small">Transaction date <?= e(formatTransferDate((string)$transfer['transaction_date'])) ?></span>
+                <span class="text-white-50 small">Transaction Date <?= e(formatTransferDate((string)$transfer['transaction_date'])) ?></span>
               </div>
             </div>
             <div class="text-start text-md-end">
@@ -1140,7 +1140,7 @@ if ($reference !== '') {
               <i class="bi bi-exclamation-triangle text-warning fs-2"></i>
               <div>
                 <div class="tracking-panel-title mb-2">Tracking service temporarily unavailable</div>
-                <p class="text-muted mb-0">The database connection is currently unavailable. Please verify <code>config.php</code> settings and schema setup, then try again.</p>
+                <p class="text-muted mb-0">Our tracking service is temporarily unavailable. Please try again later or contact support for assistance.</p>
               </div>
             </div>
             <?php endif; ?>
