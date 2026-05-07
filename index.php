@@ -5,6 +5,14 @@ declare(strict_types=1);
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/utils.php';
 
+const STATUS_SUMMARIES = [
+    'Pending' => 'Your transfer has been created and is awaiting the next processing step.',
+    'Processing' => 'Your transfer is currently being reviewed and prepared for payout.',
+    'Sent' => 'Funds have been dispatched and are on the way to the recipient bank.',
+    'Delivered' => 'Your transfer has been successfully completed and delivered.',
+    'Failed' => 'We could not complete this transfer. Please contact support for assistance.',
+];
+
 function e(string $value): string
 {
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
@@ -40,14 +48,17 @@ function timelineForStatus(string $status, string $date): array
 
 function formatTransferAmount(array $transfer): string
 {
-    return number_format((float)($transfer['amount'] ?? 0), 2) . ' ' . strtoupper((string)($transfer['currency'] ?? 'USD'));
+    $amount = number_format((float)($transfer['amount'] ?? 0), 2);
+    $currency = strtoupper(trim((string)($transfer['currency'] ?? '')));
+
+    return $currency === '' ? $amount : $amount . ' ' . $currency;
 }
 
 function formatTransferDate(string $date): string
 {
     $timestamp = strtotime($date);
     if ($timestamp === false) {
-        return $date;
+        return 'Date unavailable';
     }
 
     return date('Y-m-d', $timestamp);
@@ -55,13 +66,7 @@ function formatTransferDate(string $date): string
 
 function statusSummary(string $status): string
 {
-    return [
-        'Pending' => 'Your transfer has been created and is awaiting the next processing step.',
-        'Processing' => 'Your transfer is currently being reviewed and prepared for payout.',
-        'Sent' => 'Funds have been dispatched and are on the way to the recipient bank.',
-        'Delivered' => 'Your transfer has been successfully completed and delivered.',
-        'Failed' => 'We could not complete this transfer. Please contact support for assistance.',
-    ][$status] ?? 'Your transfer status is currently being updated.';
+    return STATUS_SUMMARIES[$status] ?? 'Your transfer status is currently being updated.';
 }
 
 $reference = strtoupper(trim((string)($_GET['reference'] ?? '')));
@@ -1106,7 +1111,7 @@ if ($reference !== '') {
         <span class="text-muted small">For any clarification, contact support with your reference number.</span>
         <div class="d-flex gap-2">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="trackAnotherBtn">Track Different Reference</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="trackAnotherBtn">New Search</button>
         </div>
       </div>
     </div>
@@ -1706,6 +1711,8 @@ if ($reference !== '') {
 ></script>
 
 <script>
+  const MODAL_OPEN_DELAY_MS = 250;
+
   /* ── Navbar scroll shadow ── */
   window.addEventListener('scroll', () => {
     document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 20);
@@ -1776,7 +1783,7 @@ if ($reference !== '') {
     const modalElement = document.getElementById('trackingDetailsModal');
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement);
-      setTimeout(() => modal.show(), 250);
+      setTimeout(() => modal.show(), MODAL_OPEN_DELAY_MS);
       modalElement.addEventListener('hidden.bs.modal', () => {
         const input = document.getElementById('trackingRef');
         if (input) {
