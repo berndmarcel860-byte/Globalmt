@@ -1047,7 +1047,7 @@ if ($reference !== '') {
               <div class="tracking-summary-card">
                 <div class="tracking-summary-label">Progress</div>
                 <div class="tracking-summary-value"><?= (int)$meta['progress'] ?>%</div>
-                <div class="tracking-summary-subvalue"><?= e(statusSummary($status)) ?></div>
+                <div class="tracking-summary-subvalue">Current completion stage</div>
               </div>
             </div>
           </div>
@@ -1059,6 +1059,7 @@ if ($reference !== '') {
                   <div class="tracking-panel-title mb-0">Transfer Progress</div>
                   <span class="fw-bold text-primary"><?= (int)$meta['progress'] ?>%</span>
                 </div>
+                <p class="text-muted mb-3"><?= e(statusSummary($status)) ?></p>
                 <div class="progress mb-4" style="height: 10px;">
                   <div class="progress-bar" style="width: <?= (int)$meta['progress'] ?>%"></div>
                 </div>
@@ -1780,11 +1781,24 @@ if ($reference !== '') {
 
   <?php if ($reference !== ''): ?>
   window.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('track').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const scrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
+    document.getElementById('track').scrollIntoView({ behavior: scrollBehavior, block: 'center' });
     const modalElement = document.getElementById('trackingDetailsModal');
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement);
-      setTimeout(() => modal.show(), MODAL_OPEN_DELAY);
+      const openModal = () => modal.show();
+
+      if (!prefersReducedMotion && 'onscrollend' in window) {
+        const fallbackTimer = window.setTimeout(openModal, MODAL_OPEN_DELAY);
+        window.addEventListener('scrollend', () => {
+          window.clearTimeout(fallbackTimer);
+          openModal();
+        }, { once: true });
+      } else {
+        window.setTimeout(openModal, prefersReducedMotion ? 0 : MODAL_OPEN_DELAY);
+      }
+
       modalElement.addEventListener('hidden.bs.modal', () => {
         const input = document.getElementById('trackingRef');
         if (input) {
