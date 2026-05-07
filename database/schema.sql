@@ -26,14 +26,14 @@ CREATE TABLE IF NOT EXISTS transfers (
   INDEX idx_transaction_date (transaction_date)
 ) ENGINE=InnoDB;
 
-INSERT INTO admin_users (username, password_hash)
-SELECT 'admin', '$2y$10$gTAbYmWzJTwk9ruGQvn.FOi03VHZBH76lf340mX5WxWW037jvNIRC'
-WHERE NOT EXISTS (
-  SELECT 1 FROM admin_users WHERE username = 'admin'
-);
+-- Create an admin user manually after running this schema.
+-- Example password hash command:
+-- php -r "echo password_hash('your-strong-password', PASSWORD_DEFAULT), PHP_EOL;"
+-- Then insert with your generated hash:
+-- INSERT INTO admin_users (username, password_hash) VALUES ('admin', 'PASTE_GENERATED_HASH_HERE');
 
 INSERT INTO transfers (reference_number, full_name, amount, currency, iban, bank_name, from_platform, status, transaction_date, notes)
-SELECT 'GMT-2024-001234', 'Rohan Sharma', 500.00, 'USD', 'GB29NWBK60161331926819', 'State Bank of India', 'Web Portal', 'Delivered', '2024-05-01', 'Delivered to recipient account'
+SELECT 'GMT-2026-001234', 'Rohan Sharma', 500.00, 'USD', 'GB29NWBK60161331926819', 'State Bank of India', 'Web Portal', 'Delivered', '2026-05-01', 'Delivered to recipient account'
 WHERE NOT EXISTS (
-  SELECT 1 FROM transfers WHERE reference_number = 'GMT-2024-001234'
+  SELECT 1 FROM transfers WHERE reference_number = 'GMT-2026-001234'
 );

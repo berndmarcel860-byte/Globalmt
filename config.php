@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-const DB_HOST = '127.0.0.1';
-const DB_PORT = '3306';
-const DB_NAME = 'globalmt';
-const DB_USER = 'root';
-const DB_PASS = '';
+function envValue(string $key, string $default): string
+{
+    $value = getenv($key);
+    return ($value === false || $value === '') ? $default : $value;
+}
 
 function db(): PDO
 {
@@ -16,9 +16,15 @@ function db(): PDO
         return $pdo;
     }
 
-    $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', DB_HOST, DB_PORT, DB_NAME);
+    $host = envValue('GMT_DB_HOST', '127.0.0.1');
+    $port = envValue('GMT_DB_PORT', '3306');
+    $name = envValue('GMT_DB_NAME', 'globalmt');
+    $user = envValue('GMT_DB_USER', 'root');
+    $pass = envValue('GMT_DB_PASS', '');
 
-    $pdo = new PDO($dsn, DB_USER, DB_PASS, [
+    $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', $host, $port, $name);
+
+    $pdo = new PDO($dsn, $user, $pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES => false,

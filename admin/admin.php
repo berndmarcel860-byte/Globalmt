@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 session_start();
 require_once dirname(__DIR__) . '/config.php';
+require_once dirname(__DIR__) . '/utils.php';
 
 function e(string $value): string
 {
@@ -30,7 +31,31 @@ function requireCsrf(): void
 
 function loggedIn(): bool
 {
-    return !empty($_SESSION['admin_user']);
+    return isset($_SESSION['admin_user']) && is_string($_SESSION['admin_user']) && $_SESSION['admin_user'] !== '';
+}
+
+function requireAuth(): void
+{
+    if (!loggedIn()) {
+        http_response_code(403);
+        exit('Unauthorized.');
+    }
+}
+
+function validateTransferPayload(array $payload): array
+{
+    $requiredFields = ['reference_number', 'full_name', 'iban', 'bank_name', 'from_platform', 'transaction_date'];
+    foreach ($requiredFields as $field) {
+        if (($payload[$field] ?? '') === '') {
+            return ['All required fields must be provided.'];
+        }
+    }
+
+    if (($payload['amount'] ?? 0) <= 0) {
+        return ['Amount must be greater than zero.'];
+    }
+
+    return [];
 }
 
 $errors = [];
@@ -43,12 +68,14 @@ if (isset($_GET['logout'])) {
 }
 
 if (isset($_GET['export']) && loggedIn()) {
+    requireAuth();
     $stmt = db()->query('SELECT reference_number, full_name, amount, currency, iban, bank_name, from_platform, status, transaction_date, notes FROM transfers ORDER BY transaction_date DESC');
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename="gmt_transfers.csv"');
     $output = fopen('php://output', 'w');
     fputcsv($output, ['reference_number', 'full_name', 'amount', 'currency', 'iban', 'bank_name', 'from_platform', 'status', 'transaction_date', 'notes']);
     while ($row = $stmt->fetch()) {
+        $row['iban'] = maskIban((string)($row['iban'] ?? ''));
         fputcsv($output, $row);
     }
     fclose($output);
@@ -64,6 +91,7 @@ if (isset($_POST['login'])) {
         $stmt->execute(['username' => $username]);
         $admin = $stmt->fetch();
         if ($admin && password_verify($password, (string)$admin['password_hash'])) {
+            session_regenerate_id(true);
             $_SESSION['admin_user'] = $admin['username'];
             header('Location: admin.php');
             exit;
@@ -91,13 +119,28 @@ if (loggedIn() && isset($_POST['save_transfer'])) {
         'notes' => trim((string)($_POST['notes'] ?? '')),
     ];
 
-    if ($payload['reference_number'] === '' || $payload['full_name'] === '' || $payload['amount'] <= 0 || $payload['iban'] === '' || $payload['bank_name'] === '' || $payload['from_platform'] === '' || $payload['transaction_date'] === '') {
-        $errors[] = 'All required fields must be provided.';
+    $validationErrors = validateTransferPayload($payload);
+    if ($validationErrors !== []) {
+        $errors = array_merge($errors, $validationErrors);
     } else {
         try {
             if ($id > 0) {
                 $payload['id'] = $id;
-                $sql = 'UPDATE transfers SET reference_number=:reference_number, full_name=:full_name, amount=:amount, currency=:currency, iban=:iban, bank_name=:bank_name, from_platform=:from_platform, status=:status, transaction_date=:transaction_date, notes=:notes WHERE id=:id';
+                $sql = <<<SQL
+                    UPDATE transfers
+                    SET
+                        reference_number = :reference_number,
+                        full_name = :full_name,
+                        amount = :amount,
+                        currency = :currency,
+                        iban = :iban,
+                        bank_name = :bank_name,
+                        from_platform = :from_platform,
+                        status = :status,
+                        transaction_date = :transaction_date,
+                        notes = :notes
+                    WHERE id = :id
+                SQL;
                 db()->prepare($sql)->execute($payload);
             } else {
                 $sql = 'INSERT INTO transfers (reference_number, full_name, amount, currency, iban, bank_name, from_platform, status, transaction_date, notes) VALUES (:reference_number, :full_name, :amount, :currency, :iban, :bank_name, :from_platform, :status, :transaction_date, :notes)';
@@ -138,14 +181,27 @@ $filters = [
     'sort' => trim((string)($_GET['sort'] ?? 'transaction_date_desc')),
 ];
 
-$stats = ['total' => 0, 'pending' => 0, 'processing' => 0, 'delivered' => 0];
+$stats = ['total' => 0, 'pending' => 0, 'processing' => 0, 'sent' => 0, 'delivered' => 0, 'failed' => 0];
 $rows = [];
 
 if (loggedIn()) {
-    $stats['total'] = (int)db()->query('SELECT COUNT(*) FROM transfers')->fetchColumn();
-    $stats['pending'] = (int)db()->query("SELECT COUNT(*) FROM transfers WHERE status='Pending'")->fetchColumn();
-    $stats['processing'] = (int)db()->query("SELECT COUNT(*) FROM transfers WHERE status='Processing'")->fetchColumn();
-    $stats['delivered'] = (int)db()->query("SELECT COUNT(*) FROM transfers WHERE status='Delivered'")->fetchColumn();
+    $statsSql = <<<SQL
+        SELECT
+            COUNT(*) AS total,
+            SUM(CASE WHEN status = 'Pending' THEN 1 ELSE 0 END) AS pending,
+            SUM(CASE WHEN status = 'Processing' THEN 1 ELSE 0 END) AS processing,
+            SUM(CASE WHEN status = 'Sent' THEN 1 ELSE 0 END) AS sent,
+            SUM(CASE WHEN status = 'Delivered' THEN 1 ELSE 0 END) AS delivered,
+            SUM(CASE WHEN status = 'Failed' THEN 1 ELSE 0 END) AS failed
+        FROM transfers
+    SQL;
+    $statsRow = db()->query($statsSql)->fetch() ?: [];
+    $stats['total'] = (int)($statsRow['total'] ?? 0);
+    $stats['pending'] = (int)($statsRow['pending'] ?? 0);
+    $stats['processing'] = (int)($statsRow['processing'] ?? 0);
+    $stats['sent'] = (int)($statsRow['sent'] ?? 0);
+    $stats['delivered'] = (int)($statsRow['delivered'] ?? 0);
+    $stats['failed'] = (int)($statsRow['failed'] ?? 0);
 
     $where = [];
     $params = [];
@@ -160,12 +216,13 @@ if (loggedIn()) {
         $params['status'] = $filters['status'];
     }
 
-    $sortSql = match ($filters['sort']) {
+    $allowedSorts = [
+        'transaction_date_desc' => 'transaction_date DESC',
         'reference_asc' => 'reference_number ASC',
         'name_asc' => 'full_name ASC',
         'amount_desc' => 'amount DESC',
-        default => 'transaction_date DESC'
-    };
+    ];
+    $sortSql = $allowedSorts[$filters['sort']] ?? $allowedSorts['transaction_date_desc'];
 
     $sql = 'SELECT * FROM transfers';
     if ($where) {
@@ -221,7 +278,6 @@ $formValues = $editing ?: [
   <?php if (!loggedIn()): ?>
     <div class="card card-soft p-4 mx-auto" style="max-width:420px;">
       <h2 class="h5">Admin Login</h2>
-      <p class="text-muted small">Default seed account: admin / admin123</p>
       <form method="post">
         <div class="mb-3">
           <label class="form-label">Username</label>
@@ -236,10 +292,12 @@ $formValues = $editing ?: [
     </div>
   <?php else: ?>
     <div class="row g-3 mb-3">
-      <div class="col-6 col-md-3"><div class="card card-soft p-3"><small class="text-muted">Total</small><div class="h4 mb-0"><?= $stats['total'] ?></div></div></div>
-      <div class="col-6 col-md-3"><div class="card card-soft p-3"><small class="text-muted">Pending</small><div class="h4 mb-0"><?= $stats['pending'] ?></div></div></div>
-      <div class="col-6 col-md-3"><div class="card card-soft p-3"><small class="text-muted">Processing</small><div class="h4 mb-0"><?= $stats['processing'] ?></div></div></div>
-      <div class="col-6 col-md-3"><div class="card card-soft p-3"><small class="text-muted">Delivered</small><div class="h4 mb-0"><?= $stats['delivered'] ?></div></div></div>
+      <div class="col-6 col-md-4 col-lg-2"><div class="card card-soft p-3"><small class="text-muted">Total</small><div class="h4 mb-0"><?= $stats['total'] ?></div></div></div>
+      <div class="col-6 col-md-4 col-lg-2"><div class="card card-soft p-3"><small class="text-muted">Pending</small><div class="h4 mb-0"><?= $stats['pending'] ?></div></div></div>
+      <div class="col-6 col-md-4 col-lg-2"><div class="card card-soft p-3"><small class="text-muted">Processing</small><div class="h4 mb-0"><?= $stats['processing'] ?></div></div></div>
+      <div class="col-6 col-md-4 col-lg-2"><div class="card card-soft p-3"><small class="text-muted">Sent</small><div class="h4 mb-0"><?= $stats['sent'] ?></div></div></div>
+      <div class="col-6 col-md-4 col-lg-2"><div class="card card-soft p-3"><small class="text-muted">Delivered</small><div class="h4 mb-0"><?= $stats['delivered'] ?></div></div></div>
+      <div class="col-6 col-md-4 col-lg-2"><div class="card card-soft p-3"><small class="text-muted">Failed</small><div class="h4 mb-0"><?= $stats['failed'] ?></div></div></div>
     </div>
 
     <div class="card card-soft p-3 mb-3">

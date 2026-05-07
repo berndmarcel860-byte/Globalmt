@@ -3,20 +3,11 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/utils.php';
 
 function e(string $value): string
 {
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-}
-
-function maskIban(string $iban): string
-{
-    $clean = preg_replace('/\s+/', '', $iban) ?? '';
-    if (strlen($clean) <= 8) {
-        return $clean;
-    }
-
-    return substr($clean, 0, 4) . ' •••• •••• ' . substr($clean, -4);
 }
 
 function statusMeta(string $status): array
@@ -52,7 +43,7 @@ $error = null;
 
 if ($reference !== '') {
     try {
-        $stmt = db()->prepare('SELECT * FROM transfers WHERE reference_number = :reference LIMIT 1');
+        $stmt = db()->prepare('SELECT reference_number, full_name, amount, currency, iban, bank_name, from_platform, status, transaction_date, notes FROM transfers WHERE reference_number = :reference LIMIT 1');
         $stmt->execute(['reference' => $reference]);
         $transfer = $stmt->fetch() ?: null;
         if (!$transfer) {
