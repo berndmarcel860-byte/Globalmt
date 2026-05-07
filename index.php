@@ -1006,7 +1006,7 @@ if ($reference !== '') {
               <div class="tracking-reference-chip"><i class="bi bi-upc-scan"></i> <?= e((string)$transfer['reference_number']) ?></div>
               <div class="mt-3 d-flex flex-wrap align-items-center gap-2">
                 <span class="badge rounded-pill <?= e($meta['badgeClass']) ?> px-3 py-2"><?= e($status) ?></span>
-                <span class="text-white-50 small">Updated <?= e(formatTransferDate((string)$transfer['transaction_date'])) ?></span>
+                <span class="text-white-50 small">Transaction date <?= e(formatTransferDate((string)$transfer['transaction_date'])) ?></span>
               </div>
             </div>
             <div class="text-start text-md-end">
@@ -1106,7 +1106,7 @@ if ($reference !== '') {
         <span class="text-muted small">For any clarification, contact support with your reference number.</span>
         <div class="d-flex gap-2">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="trackAnotherBtn">Track Another Reference</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="trackAnotherBtn">Track Different Reference</button>
         </div>
       </div>
     </div>
