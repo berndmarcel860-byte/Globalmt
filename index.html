@@ -746,7 +746,7 @@
             Your reference number was emailed to you when your transfer was initiated.
           </p>
           <div class="text-muted" style="font-size:.8rem;">
-            Admin can manage references in <a href="admin.html">Admin Dashboard</a>.
+            Admin can manage references in <a href="admin.html" aria-label="Navigate to Admin Dashboard">Admin Dashboard</a>.
           </div>
 
           <div class="search-loading" id="searchLoading">
@@ -1379,11 +1379,11 @@
   /* ── Transfer tracker ── */
   const STORAGE_KEY = 'gmt_transfers';
   const STATUS_META = {
-    Pending:    { badge: 'secondary',         alert: 'alert-secondary', progress: 20 },
-    Processing: { badge: 'warning text-dark', alert: 'alert-warning',   progress: 60 },
-    Sent:       { badge: 'info text-dark',    alert: 'alert-info',      progress: 85 },
-    Delivered:  { badge: 'success',           alert: 'alert-success',   progress: 100 },
-    Failed:     { badge: 'danger',            alert: 'alert-danger',    progress: 45 },
+    Pending:    { badgeClass: 'bg-secondary',         alert: 'alert-secondary', progress: 20 },
+    Processing: { badgeClass: 'bg-warning text-dark', alert: 'alert-warning',   progress: 60 },
+    Sent:       { badgeClass: 'bg-info text-dark',    alert: 'alert-info',      progress: 85 },
+    Delivered:  { badgeClass: 'bg-success',           alert: 'alert-success',   progress: 100 },
+    Failed:     { badgeClass: 'bg-danger',            alert: 'alert-danger',    progress: 45 },
   };
 
   const defaultTransfers = [
@@ -1520,7 +1520,7 @@
     document.getElementById('statusProgressBar').style.width = `${config.progress}%`;
 
     const badge = document.getElementById('statusBadge');
-    badge.className = `badge rounded-pill fw-semibold bg-${config.badge}`;
+    badge.className = `badge rounded-pill fw-semibold ${config.badgeClass}`;
     badge.textContent = status;
 
     const details = [
